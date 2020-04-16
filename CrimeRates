@@ -1,1 +1,11 @@
+import pandas as pd
+import numpy as np
+import ssl
 
+ssl._create_default_https_context = ssl._create_unverified_context
+
+pgh_incident_data = pd.read_csv("https://data.wprdc.org/datastore/dump/1797ead8-8262-41cc-9099-cbc8a161924b",
+                           index_col= "PK", 
+                           parse_dates=False)
+
+pgh_incident_data['INCIDENTNEIGHBORHOOD'].value_counts()
