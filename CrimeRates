@@ -31,9 +31,6 @@ counts = pgh_incident_data['INCIDENTNEIGHBORHOOD'].value_counts()
 print(counts)
 
 
-
-
-
 world = geopandas.read_file('Neighborhood Shapefiles')
 ax = world.plot(
      color='white', edgecolor='black')
@@ -46,4 +43,4 @@ world.plot(
     column= counts, 
     legend=True,
     legend_kwds={'label': "Crime Rate by Neighborhood",'orientation': "horizontal"},
-    cmap='hot')
+    cmap='Wistia')
