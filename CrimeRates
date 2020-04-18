@@ -1,6 +1,10 @@
 import pandas as pd
 import numpy as np
 import ssl
+import geopandas
+import matplotlib.pyplot as plt
+from shapely import wkt
+
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
@@ -8,4 +12,38 @@ pgh_incident_data = pd.read_csv("https://data.wprdc.org/datastore/dump/1797ead8-
                            index_col= "PK", 
                            parse_dates=False)
 
-pgh_incident_data['INCIDENTNEIGHBORHOOD'].value_counts()
+indexNames = pgh_incident_data[ pgh_incident_data['INCIDENTNEIGHBORHOOD'] == "Outside County" ].index
+pgh_incident_data.drop(indexNames , inplace=True)
+indexNames = pgh_incident_data[ pgh_incident_data['INCIDENTNEIGHBORHOOD'] == "Outside State" ].index
+pgh_incident_data.drop(indexNames , inplace=True)
+indexNames = pgh_incident_data[ pgh_incident_data['X'] == 0].index
+pgh_incident_data.drop(indexNames , inplace=True)
+indexNames = pgh_incident_data[ pgh_incident_data['X'] < -80.08].index
+pgh_incident_data.drop(indexNames , inplace=True)
+indexNames = pgh_incident_data[ pgh_incident_data['Y'] > 40.5].index
+pgh_incident_data.drop(indexNames , inplace=True)
+indexNames = pgh_incident_data[ pgh_incident_data['Y'] < 40.36].index
+pgh_incident_data.drop(indexNames , inplace=True)
+indexNames = pgh_incident_data[ pgh_incident_data['X'] > -79.85].index
+pgh_incident_data.drop(indexNames , inplace=True)
+
+counts = pgh_incident_data['INCIDENTNEIGHBORHOOD'].value_counts()
+print(counts)
+
+
+
+
+
+world = geopandas.read_file('Neighborhood Shapefiles')
+ax = world.plot(
+     color='white', edgecolor='black')
+
+gdf = geopandas.GeoDataFrame(
+    pgh_incident_data, geometry=geopandas.points_from_xy(pgh_incident_data.X, pgh_incident_data.Y))
+
+gdf.plot(ax=ax, color='red')
+world.plot(
+    column= counts, 
+    legend=True,
+    legend_kwds={'label': "Crime Rate by Neighborhood",'orientation': "horizontal"},
+    cmap='hot')
